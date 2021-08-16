@@ -15,7 +15,7 @@
 
 尽管您目前仍可以使用某些非 SDK 接口（取决于应用的目标 API 级别），但只要您使用任何非 SDK 方法或字段，终归存在导致应用出问题的显著风险。如果您的应用依赖于非 SDK 接口，建议您开始计划迁移到 SDK 接口或其他替代方案。如果您无法为应用中的功能找到无需使用非 SDK 接口的替代方案，我们建议您[请求添加新的公共 API](https://developer.android.com/guide/app-compatibility/restrictions-non-sdk-interfaces#feature-request)。
 
-# 目的:
+# 该git仓库目的:
 
 绕开非SDK接口限制，访问hiddenapi接口
 
