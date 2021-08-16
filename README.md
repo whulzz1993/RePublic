@@ -65,6 +65,9 @@ static ObjPtr<mirror::ClassLoader> GetClassLoader(const ScopedObjectAccess& soa)
 ## 目前已有的方案参考:
 
 [Free reflection](https://github.com/tiann/FreeReflection)
+缺点：classloader未来[可能受限](https://android-review.googlesource.com/c/platform/libcore/+/1666599)
+[RestrictionBypass](https://github.com/ChickenHook/RestrictionBypass)
+缺点：pthread创建线程使caller为null的方案[将受限](https://android-review.googlesource.com/c/platform/art/+/1664304)
 
 # 兼容性：
 
@@ -79,7 +82,6 @@ android 9至android12-beta-4
 | 元反射                     | 否       | 是              |
 | 兼容安卓11/12              | 是       | 不太清楚        |
 | 第三方ROM兼容性得分        | 优秀     | 良好            |
-
 
 
 # RePublic文章参考
