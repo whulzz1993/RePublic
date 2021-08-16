@@ -22,6 +22,7 @@
 # 核心实现：
 
 1.系统framework代码中可以通过设置setHiddenApiExemptions，达到随意访问hiddenapi的目的
+
 2.由于class VMRuntime被hide，可以在JNI_OnLoad中反射ZygoteInit;->setApiBlacklistExemptions
 
 ## 使用JNI_OnLoad的原因：
