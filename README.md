@@ -19,6 +19,48 @@
 
 绕开非SDK接口限制，访问hiddenapi接口
 
+# 核心实现：
+
+1.系统framework代码中可以通过设置setHiddenApiExemptions，达到随意访问hiddenapi的目的
+2.由于class VMRuntime被hide，可以在JNI_OnLoad中反射ZygoteInit;->setApiBlacklistExemptions
+
+## 使用JNI_OnLoad的原因：
+
+### JNI_OnLoad中调用env->FindClass流程：
+
+```c++
+  static jclass FindClass(JNIEnv* env, const char* name) {
+    CHECK_NON_NULL_ARGUMENT(name);
+    ...
+    ...
+    if (runtime->IsStarted()) {
+      //关键的地方为GetClassLoader
+      StackHandleScope<1> hs(soa.Self());
+      Handle<mirror::ClassLoader> class_loader(hs.NewHandle(GetClassLoader(soa)));
+      c = class_linker->FindClass(soa.Self(), descriptor.c_str(), class_loader);
+    } else {
+      c = class_linker->FindSystemClass(soa.Self(), descriptor.c_str());
+    }
+    return soa.AddLocalReference<jclass>(c);
+  }
+```
+
+
+
+GetClassLoader函数：
+
+```c++
+static ObjPtr<mirror::ClassLoader> GetClassLoader(const ScopedObjectAccess& soa)
+    REQUIRES_SHARED(Locks::mutator_lock_) {
+  ArtMethod* method = soa.Self()->GetCurrentMethod(nullptr);
+  // If we are running Runtime.nativeLoad, use the overriding ClassLoader it set.
+  if (method == jni::DecodeArtMethod(WellKnownClasses::java_lang_Runtime_nativeLoad)) {
+    return soa.Decode<mirror::ClassLoader>(soa.Self()->GetClassLoaderOverride());
+  }
+```
+
+由于JNI_OnLoad是通过java层Runtime;->nativeLoad调用过来的，所以GetClassLoader返回的是bootclassloader，该classLoader的domain为kCorePlatform，可以访问任何hiddenapi(包括blacklist)，所以此处为系统的一个漏洞
+
 ## 目前已有的方案参考:
 
 [Free reflection](https://github.com/tiann/FreeReflection)
