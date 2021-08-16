@@ -1,0 +1,3 @@
+include ':RePublic'
+include ':app'
+rootProject.name = "RePublic"
