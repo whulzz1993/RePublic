@@ -19,6 +19,14 @@
 
 绕开非SDK接口限制，访问hiddenapi接口
 
+## 目前已有的方案参考:
+
+[Free reflection](https://github.com/tiann/FreeReflection)
+缺点：classloader未来[可能受限](https://android-review.googlesource.com/c/platform/libcore/+/1666599)
+
+[RestrictionBypass](https://github.com/ChickenHook/RestrictionBypass)
+缺点：pthread创建线程使caller为null的方案[将受限](https://android-review.googlesource.com/c/platform/art/+/1664304)
+
 # 核心实现：
 
 1.系统framework代码中可以通过设置setHiddenApiExemptions，达到随意访问hiddenapi的目的
@@ -61,14 +69,6 @@ static ObjPtr<mirror::ClassLoader> GetClassLoader(const ScopedObjectAccess& soa)
 ```
 
 由于JNI_OnLoad是通过java层Runtime;->nativeLoad调用过来的，所以GetClassLoader返回的是bootclassloader，该classLoader的domain为kCorePlatform，可以访问任何hiddenapi(包括blacklist)，所以此处为系统的一个漏洞
-
-## 目前已有的方案参考:
-
-[Free reflection](https://github.com/tiann/FreeReflection)
-缺点：classloader未来[可能受限](https://android-review.googlesource.com/c/platform/libcore/+/1666599)
-
-[RestrictionBypass](https://github.com/ChickenHook/RestrictionBypass)
-缺点：pthread创建线程使caller为null的方案[将受限](https://android-review.googlesource.com/c/platform/art/+/1664304)
 
 # 兼容性：
 
